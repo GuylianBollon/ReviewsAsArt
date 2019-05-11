@@ -18,21 +18,24 @@ using ReviewsAsArt.Models;
 namespace ReviewsAsArt.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
-    internal class UserController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly IUserRepository _iur;
         private readonly IConfiguration _config;
 
-        public UserController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IUserRepository iur, IConfiguration config)
+        public UserController(SignInManager<User> signInManager, UserManager<User> userManager, IUserRepository iur, IConfiguration config)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _iur = iur;
             _config = config;
         }
+        [AllowAnonymous]
         [HttpGet]
         public IEnumerable<User> GetUsers()
         {
@@ -46,13 +49,13 @@ namespace ReviewsAsArt.Controllers
             User user = _iur.GetBy(User.Identity.Name);
             return user.Berichten;
         }
-
+        [AllowAnonymous]
         [HttpGet("{user}")]
         public IEnumerable<Review> GetReviewsVanUser(User user)
         {
             return _iur.ToonReviewsVanUser(user);
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("{users}")]
         public IEnumerable<Review> GetReviewsVanSubscripties(IEnumerable<User> user)
         {
@@ -69,7 +72,7 @@ namespace ReviewsAsArt.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("{user, user2}")]
+        [HttpPut("{user}")]
         public void SubscribeUser(User user)
         {
             User user2 = _iur.GetBy(User.Identity.Name);
@@ -79,7 +82,7 @@ namespace ReviewsAsArt.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("{user, user2}")]
+        [HttpPut("{user}")]
         public void UnsubscribeUser(User user)
         {
             User user2 = _iur.GetBy(User.Identity.Name);
@@ -105,7 +108,7 @@ namespace ReviewsAsArt.Controllers
             return BadRequest();
         }
 
-        private string GetToken(IdentityUser user)
+        private string GetToken(User user)
         {
             var claims = new[]
             {
@@ -122,17 +125,32 @@ namespace ReviewsAsArt.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<String>> Register(RegisterDTO model)
         {
-            IdentityUser user = new IdentityUser { UserName = model.Email, Email = model.Email };
             User customer = new User { Email = model.Email, UserName = model.UserName};
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(customer, model.Password);
             if (result.Succeeded)
             {
                 _iur.Add(customer);
                 _iur.SaveChanges();
-                string token = GetToken(user);
+                string token = GetToken(customer);
                 return Created("", token);
             }
             return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("checkusername")]
+        public async Task<ActionResult<Boolean>> CheckAvailableUserName(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            return user == null;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("checkemail")]
+        public async Task<ActionResult<Boolean>> CheckAvailableEmail(string email)
+        {
+            var mail = await _userManager.FindByEmailAsync(email);
+            return mail == null;
         }
     }
 }

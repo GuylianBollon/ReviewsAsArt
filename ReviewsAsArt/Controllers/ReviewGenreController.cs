@@ -6,13 +6,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ReviewsAsArt.DTO;
 using ReviewsAsArt.Models;
 
 namespace ReviewsAsArt.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
-    internal class ReviewGenreController : ControllerBase
+    public class ReviewGenreController : ControllerBase
     {
         private readonly IReviewGenreRepository _irgr;
 
@@ -20,7 +23,7 @@ namespace ReviewsAsArt.Controllers
         {
             _irgr = irgr;
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public IEnumerable<Reviewgenre> GetReviewgenres()
         {
@@ -35,36 +38,37 @@ namespace ReviewsAsArt.Controllers
             _irgr.SaveChanges();
         }
 
-        [HttpPut("{reviewgenre, user}")]
-        public void BlokkeerUser(Reviewgenre reviewgenre, User user)
+        [HttpPut("{admin}")]
+        public void BlokkeerUser(AdminDTO admin)
         {
-            _irgr.BlokkeerUser(user, reviewgenre);
+            _irgr.BlokkeerUser(admin.user, admin.rg);
             _irgr.SaveChanges();
         }
 
-        [HttpPut("{reviewgenre, user}")]
-        public void DeblokkeerUser(Reviewgenre reviewgenre, User user)
+        [HttpPut("{admin}")]
+        public void DeblokkeerUser(AdminDTO admin)
         {
-            _irgr.DeblokkeerUser(user, reviewgenre);
+            _irgr.DeblokkeerUser(admin.user, admin.rg);
             _irgr.SaveChanges();
         }
 
-        [HttpGet("{reviewgenre, user}")]
-        public bool IsGeblokkeerd(Reviewgenre reviewgenre, User user)
+        [HttpGet("{admin}")]
+        public bool IsGeblokkeerd(AdminDTO admin)
         {
-            return _irgr.IsGeblokkeerd(user, reviewgenre);
+            return _irgr.IsGeblokkeerd(admin.user, admin.rg);
         }
 
-        [HttpGet("{reviewgenre, user}")]
-        public bool IsAdmin(Reviewgenre reviewgenre, User user)
+        [HttpGet("{admin}")]
+        public bool IsAdmin(AdminDTO admin)
         {
-            return _irgr.IsAdmin(user, reviewgenre);
+            return _irgr.IsAdmin(admin.user, admin.rg);
         }
 
-        [HttpGet("{rebiewgenre}")]
+        [HttpGet("{reviewgenre}")]
         public string GetAdminNaam(Reviewgenre rg)
         {
             return _irgr.GetAdminNaam(rg);
         }
+        
     }
 }

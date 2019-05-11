@@ -8,6 +8,5 @@ namespace ReviewsAsArt.Models
     public class Commentaar
     {
         public string Beschrijving { get; set; }
-        public int Score { get; set; }
     }
 }

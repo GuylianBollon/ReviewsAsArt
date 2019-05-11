@@ -11,8 +11,10 @@ using ReviewsAsArt.Models;
 namespace ReviewsAsArt.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
-    internal class WerkController : ControllerBase
+    public class WerkController : ControllerBase
     {
         private readonly IWerkRepository _iwr;
 
@@ -20,6 +22,7 @@ namespace ReviewsAsArt.Controllers
         {
             _iwr = iwr;
         }
+        [AllowAnonymous]
         [HttpGet]
         public IEnumerable<Werk> GetWerks()
         {

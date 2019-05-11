@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ReviewsAsArt.Models
 {
-    internal interface IWerkRepository
+    public interface IWerkRepository
     {
         void AddWerk(Werk werk);
         void SaveChanges();

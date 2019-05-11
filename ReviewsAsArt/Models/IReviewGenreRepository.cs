@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ReviewsAsArt.Models
 {
-    internal interface IReviewGenreRepository
+    public interface IReviewGenreRepository
     {
         void AddReviewGenre(Reviewgenre rg);
         void SaveChanges();

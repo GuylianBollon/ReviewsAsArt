@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace ReviewsAsArt.Models
 {
-    internal interface IReviewRepository
+
+    public interface IReviewRepository
     {
-        void AddScore(Review review);
-        void RemoveScore(Review review);
         void SaveChanges();
         List<Review> GetReviewsPerReviewgenre(Reviewgenre reviewgenre);
         List<Commentaar> GetCommentaarsVanReview(Review review);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ReviewsAsArt.Models
 {
-    internal interface IUserRepository
+    public interface IUserRepository
     {
         IEnumerable<Review> ToonReviewsVanUser(User user);
         IEnumerable<Review> ToonReviewsVanSubscripties(IEnumerable<User> users);

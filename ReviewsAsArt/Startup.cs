@@ -29,18 +29,17 @@ namespace ReviewsAsArt
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<Data.ApplicationDbContext>();
+            services.AddDefaultIdentity<User>().AddEntityFrameworkStores<Data.ApplicationDbContext>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IReviewGenreRepository, ReviewGenreRepository>();
             services.AddScoped<IWerkRepository, WerkRepository>();
-            services.AddScoped<ICommentaarRepository, CommentaaarRepository>();
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,6 +72,7 @@ namespace ReviewsAsArt
                 }));
                 c.OperationProcessors.Add(new OperationSecurityScopeProcessor("JWT Token"));
             });
+            services.AddCors(options => options.AddPolicy("AllowAllOrigins", builder => builder.AllowAnyOrigin()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

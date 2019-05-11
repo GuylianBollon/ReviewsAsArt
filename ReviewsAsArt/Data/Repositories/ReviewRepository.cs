@@ -17,11 +17,6 @@ namespace ReviewsAsArt.Data.Repositories
             _adc = adc;
         }
 
-        public void AddScore(Review review)
-        {
-            _dr.Find(review).ReviewScore++;
-        }
-
         public List<Commentaar> GetCommentaarsVanReview(Review review)
         {
             return _dr.FirstOrDefault(r => r == review).Commentaars.ToList();
@@ -45,11 +40,6 @@ namespace ReviewsAsArt.Data.Repositories
         public void RemoveReview(Review review)
         {
             _dr.Remove(review);
-        }
-
-        public void RemoveScore(Review review)
-        {
-            _dr.Find(review).ReviewScore--;
         }
 
         public void SaveChanges()
